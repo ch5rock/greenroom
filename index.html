@@ -10,10 +10,13 @@
   --bg:#0b0d10;
   --text:#e9eef5;
   --muted:#9aa6b2;
-  --line:rgba(255,255,255,.1);
+  --line:rgba(255,255,255,.10);
   --accent:#8bd3ff;
   --danger:#ff6b6b;
 }
+
+*{box-sizing:border-box}
+
 body{
   margin:0;
   background:var(--bg);
@@ -22,8 +25,9 @@ body{
   display:flex;
   justify-content:center;
   align-items:center;
-  height:100vh;
+  min-height:100vh;
 }
+
 .app{ width:420px; }
 
 .block{
@@ -33,7 +37,23 @@ body{
   margin-bottom:12px;
 }
 
-/* mode */
+/* THEME */
+.themeBtns{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.themeBtn{
+  padding:6px 10px;
+  border-radius:10px;
+  border:1px solid var(--line);
+  background:#111;
+  color:var(--text);
+  font-size:12px;
+  cursor:pointer;
+}
+
+/* MODE */
 .modeBtns{
   display:flex;
   gap:10px;
@@ -48,19 +68,34 @@ body{
   cursor:pointer;
 }
 .modeBtn.active{
-  background:#1a2a33;
   border-color:var(--accent);
 }
 
-/* timer */
+/* STATUS */
+.status{
+  font-size:12px;
+  color:var(--muted);
+  display:flex;
+  justify-content:space-between;
+}
+
+/* TIMER */
 .time{
   font-size:32px;
   font-weight:800;
   text-align:center;
-  margin:10px 0;
 }
 
-.row{ margin:10px 0; }
+.target{
+  text-align:center;
+  font-size:12px;
+  color:var(--muted);
+  margin-top:6px;
+}
+
+.rangeWrap{
+  margin:12px 0;
+}
 
 .btns{
   display:flex;
@@ -75,19 +110,25 @@ body{
   color:#fff;
   cursor:pointer;
 }
-.primary{ background:#1a2a33; }
-
-.status{
-  font-size:12px;
-  color:var(--muted);
-  display:flex;
-  justify-content:space-between;
+.primary{
+  border-color:var(--accent);
 }
 </style>
 </head>
 
 <body>
 <div class="app">
+
+<!-- THEME -->
+<div class="block">
+  <div class="themeBtns">
+    <button class="themeBtn" data-theme="orange">흰+주황</button>
+    <button class="themeBtn" data-theme="dark">기본</button>
+    <button class="themeBtn" data-theme="purple">아이보리+보라</button>
+    <button class="themeBtn" data-theme="blueorange">파랑+주황</button>
+    <button class="themeBtn" data-theme="green">흰+초록</button>
+  </div>
+</div>
 
 <!-- MODE -->
 <div class="block">
@@ -99,61 +140,103 @@ body{
 
 <!-- STATUS -->
 <div class="block status">
-  <span>Today: <strong id="today">0 min</strong></span>
-  <span>Score: <strong id="score">0</strong></span>
+  <span>Today <strong id="today">0</strong></span>
+  <span>Score <strong id="score">0</strong></span>
 </div>
 
 <!-- TIMER -->
 <div class="block">
-  <div class="time" id="time">00:00</div>
 
-  <div class="row">
-    <input type="range" id="range" min="10" max="60" step="5" value="30"/>
+  <div class="time" id="time">00:00</div>
+  <div class="target" id="target">30 min</div>
+
+  <div class="rangeWrap">
+    <input type="range" id="range" min="10" max="60" step="5" value="30">
   </div>
 
   <div class="btns">
     <button class="btn primary" id="start">Start</button>
     <button class="btn" id="reset">Reset</button>
   </div>
+
 </div>
 
 </div>
 
 <script>
+// ===== THEME =====
+const THEMES = {
+  orange:{
+    "--bg":"#ffffff",
+    "--text":"#111",
+    "--muted":"#666",
+    "--line":"rgba(0,0,0,.1)",
+    "--accent":"#ff7a00"
+  },
+  dark:{
+    "--bg":"#0b0d10",
+    "--text":"#e9eef5",
+    "--muted":"#9aa6b2",
+    "--line":"rgba(255,255,255,.10)",
+    "--accent":"#8bd3ff"
+  },
+  purple:{
+    "--bg":"#f6f1ff",
+    "--text":"#2a1f3d",
+    "--muted":"#7a6b9a",
+    "--line":"rgba(0,0,0,.08)",
+    "--accent":"#7c4dff"
+  },
+  blueorange:{
+    "--bg":"#0a1a2a",
+    "--text":"#e6f2ff",
+    "--muted":"#8faac4",
+    "--line":"rgba(255,255,255,.1)",
+    "--accent":"#ff8c42"
+  },
+  green:{
+    "--bg":"#ffffff",
+    "--text":"#0f2a1a",
+    "--muted":"#6c8f7a",
+    "--line":"rgba(0,0,0,.1)",
+    "--accent":"#2ecc71"
+  }
+};
+
+function applyTheme(name){
+  const t = THEMES[name];
+  Object.entries(t).forEach(([k,v])=>{
+    document.documentElement.style.setProperty(k,v);
+  });
+  localStorage.setItem("theme",name);
+}
+
+document.querySelectorAll(".themeBtn").forEach(b=>{
+  b.onclick=()=>applyTheme(b.dataset.theme);
+});
+
+applyTheme(localStorage.getItem("theme")||"dark");
+
+// ===== MODE =====
 let mode="soft";
-
-const softBtn = document.getElementById("softBtn");
-const hardBtn = document.getElementById("hardBtn");
-
 softBtn.onclick=()=>{
   mode="soft";
   softBtn.classList.add("active");
   hardBtn.classList.remove("active");
 };
-
 hardBtn.onclick=()=>{
   mode="hard";
   hardBtn.classList.add("active");
   softBtn.classList.remove("active");
 };
 
-const timeEl = document.getElementById("time");
-const startBtn = document.getElementById("start");
-const resetBtn = document.getElementById("reset");
-const range = document.getElementById("range");
-const todayEl = document.getElementById("today");
-const scoreEl = document.getElementById("score");
-
-let timer={
-  running:false,
-  elapsed:0,
-  target:1800,
-  last:0,
-  hidden:false
-};
-
+// ===== TIMER =====
+let timer={running:false,elapsed:0,target:1800,last:0,hidden:false};
 let today=0;
 let score=0;
+
+const timeEl=time;
+const targetEl=target;
 
 function fmt(t){
   const m=Math.floor(t/60);
@@ -163,44 +246,34 @@ function fmt(t){
 
 function render(){
   timeEl.textContent=fmt(timer.elapsed);
-  startBtn.textContent=timer.running?"Pause":"Start";
-  todayEl.textContent=Math.floor(today/60)+" min";
+  targetEl.textContent=(timer.target/60)+" min";
+  todayEl.textContent=Math.floor(today/60);
   scoreEl.textContent=score;
+  start.textContent=timer.running?"Pause":"Start";
 }
 
 let tick;
-
 function startTick(){
   clearInterval(tick);
   timer.last=Date.now();
-
   tick=setInterval(()=>{
-    if(!timer.running) return;
-
-    const now=Date.now();
-    const d=Math.floor((now-timer.last)/1000);
-
+    if(!timer.running)return;
+    const d=Math.floor((Date.now()-timer.last)/1000);
     if(d>0){
-      timer.elapsed=Math.min(timer.target,timer.elapsed+d);
-      timer.last=now;
+      timer.elapsed+=d;
+      timer.last=Date.now();
       render();
 
       if(timer.elapsed>=timer.target){
         timer.running=false;
-        clearInterval(tick);
-
         today+=timer.target;
-
-        // 점수 계산
         score+=Math.floor(timer.target/60)*10;
-
-        render();
       }
     }
   },200);
 }
 
-startBtn.onclick=()=>{
+start.onclick=()=>{
   if(!timer.running){
     timer.running=true;
     timer.last=Date.now();
@@ -211,7 +284,7 @@ startBtn.onclick=()=>{
   render();
 };
 
-resetBtn.onclick=()=>{
+reset.onclick=()=>{
   timer.running=false;
   timer.elapsed=0;
   render();
@@ -219,8 +292,10 @@ resetBtn.onclick=()=>{
 
 range.oninput=()=>{
   timer.target=range.value*60;
+  render();
 };
 
+// ===== VISIBILITY =====
 document.addEventListener("visibilitychange",()=>{
   if(document.hidden){
     if(timer.running){
@@ -228,19 +303,15 @@ document.addEventListener("visibilitychange",()=>{
         timer.running=false;
         timer.hidden=true;
       }else{
-        // HARD FAIL
         timer.running=false;
         timer.elapsed=0;
-
-        // 패널티
         score=Math.max(0,score-20);
-
-        alert("Hard 모드 실패");
+        alert("Hard 실패");
       }
       render();
     }
   }else{
-    if(mode==="soft" && timer.hidden){
+    if(timer.hidden){
       timer.running=true;
       timer.last=Date.now();
       startTick();
@@ -251,6 +322,5 @@ document.addEventListener("visibilitychange",()=>{
 
 render();
 </script>
-
 </body>
 </html>
