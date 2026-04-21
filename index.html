@@ -8,52 +8,84 @@
 <style>
 :root{
   --bg:#0b0d10;
+  --panel:#131821;
+  --panel-2:#0f141c;
   --text:#e9eef5;
   --muted:#9aa6b2;
   --line:rgba(255,255,255,.10);
   --accent:#8bd3ff;
   --danger:#ff6b6b;
+  --btn-text:var(--text);
+  --shadow:0 10px 30px rgba(0,0,0,.18);
 }
 
 *{box-sizing:border-box}
 
 body{
   margin:0;
+  min-height:100vh;
   background:var(--bg);
   color:var(--text);
-  font-family:system-ui;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Apple SD Gothic Neo, "Noto Sans KR", Arial, sans-serif;
   display:flex;
   justify-content:center;
   align-items:center;
-  min-height:100vh;
 }
 
-.app{ width:420px; }
+.app{
+  width:min(440px, 100vw);
+  padding:14px;
+}
 
 .block{
   border:1px solid var(--line);
-  border-radius:16px;
+  border-radius:18px;
   padding:16px;
   margin-bottom:12px;
+  background:var(--panel);
+  box-shadow:var(--shadow);
 }
 
-/* THEME */
+.topTitle{
+  margin:0 0 6px;
+  font-size:16px;
+  font-weight:700;
+  color:var(--text);
+}
+
+.topDesc{
+  margin:0;
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.45;
+}
+
+/* theme */
+.themeLabel{
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:10px;
+}
 .themeBtns{
   display:flex;
   flex-wrap:wrap;
   gap:8px;
 }
 .themeBtn{
-  padding:6px 10px;
-  border-radius:10px;
+  padding:8px 10px;
+  border-radius:12px;
   border:1px solid var(--line);
-  background:#111;
-  color:var(--text);
+  background:var(--panel-2);
+  color:var(--btn-text);
   font-size:12px;
   cursor:pointer;
 }
+.themeBtn.active{
+  border-color:var(--accent);
+  box-shadow:0 0 0 1px var(--accent) inset;
+}
 
-/* MODE */
+/* mode */
 .modeBtns{
   display:flex;
   gap:10px;
@@ -61,40 +93,90 @@ body{
 .modeBtn{
   flex:1;
   padding:12px;
-  border-radius:12px;
+  border-radius:14px;
   border:1px solid var(--line);
-  background:#111;
-  color:#fff;
+  background:var(--panel-2);
+  color:var(--btn-text);
   cursor:pointer;
+  font-weight:700;
 }
 .modeBtn.active{
   border-color:var(--accent);
+  background:color-mix(in srgb, var(--accent) 12%, var(--panel-2));
 }
-
-/* STATUS */
-.status{
+.modeDesc{
+  margin-top:10px;
   font-size:12px;
   color:var(--muted);
-  display:flex;
-  justify-content:space-between;
+  line-height:1.4;
 }
 
-/* TIMER */
+/* status */
+.status{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  font-size:12px;
+  color:var(--muted);
+}
+.status strong{
+  color:var(--text);
+}
+
+/* timer */
+.timerHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:10px;
+  margin-bottom:10px;
+}
+.timerTitle{
+  margin:0;
+  font-size:14px;
+  font-weight:700;
+}
+.timerHint{
+  margin-top:4px;
+  font-size:12px;
+  color:var(--muted);
+}
+
+.timeBox{
+  border:1px solid var(--line);
+  background:var(--panel-2);
+  border-radius:16px;
+  padding:14px;
+  margin-bottom:12px;
+}
 .time{
   font-size:32px;
   font-weight:800;
   text-align:center;
+  line-height:1;
+  font-variant-numeric: tabular-nums;
 }
-
 .target{
   text-align:center;
   font-size:12px;
   color:var(--muted);
-  margin-top:6px;
+  margin-top:8px;
 }
 
 .rangeWrap{
   margin:12px 0;
+}
+.rangeTop{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:8px;
+  font-size:12px;
+  color:var(--muted);
+}
+input[type="range"]{
+  width:100%;
+  accent-color:var(--accent);
 }
 
 .btns{
@@ -104,14 +186,27 @@ body{
 .btn{
   flex:1;
   padding:12px;
-  border-radius:12px;
+  border-radius:14px;
   border:1px solid var(--line);
-  background:#111;
-  color:#fff;
+  background:var(--panel-2);
+  color:var(--btn-text);
   cursor:pointer;
+  font-weight:700;
 }
-.primary{
+.btn.primary{
   border-color:var(--accent);
+  background:color-mix(in srgb, var(--accent) 12%, var(--panel-2));
+}
+
+.toast{
+  margin-top:10px;
+  min-height:18px;
+  font-size:12px;
+  color:var(--muted);
+}
+
+.danger{
+  color:var(--danger);
 }
 </style>
 </head>
@@ -119,208 +214,406 @@ body{
 <body>
 <div class="app">
 
-<!-- THEME -->
-<div class="block">
-  <div class="themeBtns">
-    <button class="themeBtn" data-theme="orange">흰+주황</button>
-    <button class="themeBtn" data-theme="dark">기본</button>
-    <button class="themeBtn" data-theme="purple">아이보리+보라</button>
-    <button class="themeBtn" data-theme="blueorange">파랑+주황</button>
-    <button class="themeBtn" data-theme="green">흰+초록</button>
-  </div>
-</div>
-
-<!-- MODE -->
-<div class="block">
-  <div class="modeBtns">
-    <button class="modeBtn active" id="softBtn">Soft</button>
-    <button class="modeBtn" id="hardBtn">Hard</button>
-  </div>
-</div>
-
-<!-- STATUS -->
-<div class="block status">
-  <span>Today <strong id="today">0</strong></span>
-  <span>Score <strong id="score">0</strong></span>
-</div>
-
-<!-- TIMER -->
-<div class="block">
-
-  <div class="time" id="time">00:00</div>
-  <div class="target" id="target">30 min</div>
-
-  <div class="rangeWrap">
-    <input type="range" id="range" min="10" max="60" step="5" value="30">
+  <div class="block">
+    <p class="topTitle">Training v1</p>
+    <p class="topDesc">영감 소스 없이 세션 훈련만 하는 버전입니다.</p>
   </div>
 
-  <div class="btns">
-    <button class="btn primary" id="start">Start</button>
-    <button class="btn" id="reset">Reset</button>
+  <div class="block">
+    <div class="themeLabel">Theme</div>
+    <div class="themeBtns">
+      <button class="themeBtn" data-theme="orange">흰색+주황색</button>
+      <button class="themeBtn" data-theme="dark">지금 색깔</button>
+      <button class="themeBtn" data-theme="purple">아이보리+보라</button>
+      <button class="themeBtn" data-theme="blueorange">파랑+주황</button>
+      <button class="themeBtn" data-theme="green">흰색+초록</button>
+    </div>
   </div>
 
-</div>
+  <div class="block">
+    <div class="modeBtns">
+      <button class="modeBtn active" id="softBtn">Soft</button>
+      <button class="modeBtn" id="hardBtn">Hard</button>
+    </div>
+    <div class="modeDesc" id="modeDesc">
+      Soft: 앱을 나가면 일시정지되고, 돌아오면 자동 재개됩니다.
+    </div>
+  </div>
+
+  <div class="block status">
+    <span>Today: <strong id="today">0 min</strong></span>
+    <span>Score: <strong id="score">0</strong></span>
+    <span>Fails: <strong id="fails">0</strong></span>
+  </div>
+
+  <div class="block">
+    <div class="timerHeader">
+      <div>
+        <p class="timerTitle">Session</p>
+        <div class="timerHint" id="sessionHint">목표 시간을 정한 뒤 시작하세요.</div>
+      </div>
+    </div>
+
+    <div class="timeBox">
+      <div class="time" id="time">00:00</div>
+      <div class="target" id="target">Target: 30 min</div>
+    </div>
+
+    <div class="rangeWrap">
+      <div class="rangeTop">
+        <span>목표 시간</span>
+        <span id="rangeValue">30 min</span>
+      </div>
+      <input type="range" id="range" min="10" max="60" step="5" value="30">
+    </div>
+
+    <div class="btns">
+      <button class="btn primary" id="start">Start</button>
+      <button class="btn" id="reset">Reset</button>
+    </div>
+
+    <div class="toast" id="toast"></div>
+  </div>
 
 </div>
 
 <script>
-// ===== THEME =====
+const K_STATE = "training_v1_state";
+const K_THEME = "training_v1_theme";
+
 const THEMES = {
-  orange:{
+  orange: {
     "--bg":"#ffffff",
-    "--text":"#111",
-    "--muted":"#666",
-    "--line":"rgba(0,0,0,.1)",
-    "--accent":"#ff7a00"
+    "--panel":"#fffaf5",
+    "--panel-2":"#fff3e8",
+    "--text":"#1f1f1f",
+    "--muted":"#7c6f67",
+    "--line":"rgba(0,0,0,.10)",
+    "--accent":"#f28c28",
+    "--danger":"#d94841",
+    "--btn-text":"#1f1f1f",
+    "--shadow":"0 10px 24px rgba(0,0,0,.06)"
   },
-  dark:{
+  dark: {
     "--bg":"#0b0d10",
+    "--panel":"#131821",
+    "--panel-2":"#0f141c",
     "--text":"#e9eef5",
     "--muted":"#9aa6b2",
     "--line":"rgba(255,255,255,.10)",
-    "--accent":"#8bd3ff"
+    "--accent":"#8bd3ff",
+    "--danger":"#ff6b6b",
+    "--btn-text":"#e9eef5",
+    "--shadow":"0 10px 30px rgba(0,0,0,.18)"
   },
-  purple:{
-    "--bg":"#f6f1ff",
-    "--text":"#2a1f3d",
-    "--muted":"#7a6b9a",
-    "--line":"rgba(0,0,0,.08)",
-    "--accent":"#7c4dff"
+  purple: {
+    "--bg":"#f7f2ea",
+    "--panel":"#fffaf3",
+    "--panel-2":"#f5efe8",
+    "--text":"#34264a",
+    "--muted":"#7a6b8f",
+    "--line":"rgba(67,46,97,.12)",
+    "--accent":"#7b57c7",
+    "--danger":"#c94b63",
+    "--btn-text":"#34264a",
+    "--shadow":"0 10px 24px rgba(72,52,104,.08)"
   },
-  blueorange:{
-    "--bg":"#0a1a2a",
-    "--text":"#e6f2ff",
-    "--muted":"#8faac4",
-    "--line":"rgba(255,255,255,.1)",
-    "--accent":"#ff8c42"
+  blueorange: {
+    "--bg":"#eaf4ff",
+    "--panel":"#ffffff",
+    "--panel-2":"#edf5ff",
+    "--text":"#18324d",
+    "--muted":"#5f7c96",
+    "--line":"rgba(24,50,77,.12)",
+    "--accent":"#f08a24",
+    "--danger":"#d94841",
+    "--btn-text":"#18324d",
+    "--shadow":"0 10px 24px rgba(24,50,77,.08)"
   },
-  green:{
+  green: {
     "--bg":"#ffffff",
-    "--text":"#0f2a1a",
-    "--muted":"#6c8f7a",
-    "--line":"rgba(0,0,0,.1)",
-    "--accent":"#2ecc71"
+    "--panel":"#f8fffb",
+    "--panel-2":"#eefaf2",
+    "--text":"#183025",
+    "--muted":"#5f7a6c",
+    "--line":"rgba(24,48,37,.10)",
+    "--accent":"#2f9e62",
+    "--danger":"#c94b63",
+    "--btn-text":"#183025",
+    "--shadow":"0 10px 24px rgba(24,48,37,.06)"
   }
 };
 
 function applyTheme(name){
-  const t = THEMES[name];
-  Object.entries(t).forEach(([k,v])=>{
-    document.documentElement.style.setProperty(k,v);
+  const theme = THEMES[name] || THEMES.dark;
+  Object.entries(theme).forEach(([key, value]) => {
+    document.documentElement.style.setProperty(key, value);
   });
-  localStorage.setItem("theme",name);
+  localStorage.setItem(K_THEME, name);
+
+  document.querySelectorAll(".themeBtn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.theme === name);
+  });
 }
 
-document.querySelectorAll(".themeBtn").forEach(b=>{
-  b.onclick=()=>applyTheme(b.dataset.theme);
-});
+const softBtn = document.getElementById("softBtn");
+const hardBtn = document.getElementById("hardBtn");
+const modeDesc = document.getElementById("modeDesc");
 
-applyTheme(localStorage.getItem("theme")||"dark");
+const timeEl = document.getElementById("time");
+const startBtn = document.getElementById("start");
+const resetBtn = document.getElementById("reset");
+const range = document.getElementById("range");
+const targetEl = document.getElementById("target");
+const rangeValue = document.getElementById("rangeValue");
+const todayEl = document.getElementById("today");
+const scoreEl = document.getElementById("score");
+const failsEl = document.getElementById("fails");
+const toastEl = document.getElementById("toast");
+const sessionHint = document.getElementById("sessionHint");
 
-// ===== MODE =====
-let mode="soft";
-softBtn.onclick=()=>{
-  mode="soft";
-  softBtn.classList.add("active");
-  hardBtn.classList.remove("active");
+let state = {
+  mode: "soft",
+  todaySec: 0,
+  score: 0,
+  fails: 0,
+  timer: {
+    running: false,
+    elapsed: 0,
+    target: 1800,
+    lastTick: 0,
+    pausedByHidden: false
+  }
 };
-hardBtn.onclick=()=>{
-  mode="hard";
-  hardBtn.classList.add("active");
-  softBtn.classList.remove("active");
-};
 
-// ===== TIMER =====
-let timer={running:false,elapsed:0,target:1800,last:0,hidden:false};
-let today=0;
-let score=0;
+let tick = null;
 
-const timeEl=time;
-const targetEl=target;
+function saveState(){
+  localStorage.setItem(K_STATE, JSON.stringify(state));
+}
 
-function fmt(t){
-  const m=Math.floor(t/60);
-  const s=t%60;
-  return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+function loadState(){
+  const raw = localStorage.getItem(K_STATE);
+  if(!raw) return;
+  try{
+    const parsed = JSON.parse(raw);
+    if(parsed && typeof parsed === "object"){
+      state.mode = parsed.mode === "hard" ? "hard" : "soft";
+      state.todaySec = Number(parsed.todaySec || 0);
+      state.score = Number(parsed.score || 0);
+      state.fails = Number(parsed.fails || 0);
+
+      const t = parsed.timer || {};
+      state.timer = {
+        running: !!t.running,
+        elapsed: Math.max(0, Number(t.elapsed || 0)),
+        target: Math.max(600, Math.min(3600, Number(t.target || 1800))),
+        lastTick: Number(t.lastTick || 0),
+        pausedByHidden: !!t.pausedByHidden
+      };
+    }
+  }catch(e){}
+}
+
+function fmt(sec){
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
+}
+
+function setToast(msg){
+  toastEl.textContent = msg || "";
+}
+
+function syncModeUI(){
+  softBtn.classList.toggle("active", state.mode === "soft");
+  hardBtn.classList.toggle("active", state.mode === "hard");
+
+  if(state.mode === "soft"){
+    modeDesc.textContent = "Soft: 앱을 나가면 일시정지되고, 돌아오면 자동 재개됩니다.";
+    sessionHint.textContent = "목표 시간을 정한 뒤 시작하세요.";
+  }else{
+    modeDesc.innerHTML = 'Hard: 앱을 나가면 <span class="danger">즉시 실패 + 리셋</span>됩니다.';
+    sessionHint.textContent = "Hard 모드에서는 이탈 시 세션이 실패 처리됩니다.";
+  }
+}
+
+function syncTargetUI(){
+  const min = Math.floor(state.timer.target / 60);
+  targetEl.textContent = `Target: ${min} min`;
+  rangeValue.textContent = `${min} min`;
+  range.value = String(min);
 }
 
 function render(){
-  timeEl.textContent=fmt(timer.elapsed);
-  targetEl.textContent=(timer.target/60)+" min";
-  todayEl.textContent=Math.floor(today/60);
-  scoreEl.textContent=score;
-  start.textContent=timer.running?"Pause":"Start";
+  timeEl.textContent = fmt(state.timer.elapsed);
+  startBtn.textContent = state.timer.running ? "Pause" : "Start";
+  todayEl.textContent = `${Math.floor(state.todaySec / 60)} min`;
+  scoreEl.textContent = String(state.score);
+  failsEl.textContent = String(state.fails);
+  syncModeUI();
+  syncTargetUI();
 }
 
-let tick;
+function stopTick(){
+  if(tick) clearInterval(tick);
+  tick = null;
+}
+
+function completeSession(){
+  state.timer.running = false;
+  stopTick();
+
+  state.todaySec += state.timer.target;
+
+  const min = Math.floor(state.timer.target / 60);
+  const bonus = state.mode === "hard" ? 15 : 10;
+  state.score += min * bonus;
+
+  setToast(`세션 완료. +${min * bonus}점`);
+  saveState();
+  render();
+}
+
 function startTick(){
-  clearInterval(tick);
-  timer.last=Date.now();
-  tick=setInterval(()=>{
-    if(!timer.running)return;
-    const d=Math.floor((Date.now()-timer.last)/1000);
-    if(d>0){
-      timer.elapsed+=d;
-      timer.last=Date.now();
+  stopTick();
+  state.timer.lastTick = Date.now();
+
+  tick = setInterval(() => {
+    if(!state.timer.running) return;
+
+    const now = Date.now();
+    const delta = Math.floor((now - state.timer.lastTick) / 1000);
+
+    if(delta > 0){
+      state.timer.elapsed = Math.min(state.timer.target, state.timer.elapsed + delta);
+      state.timer.lastTick = now;
+      saveState();
       render();
 
-      if(timer.elapsed>=timer.target){
-        timer.running=false;
-        today+=timer.target;
-        score+=Math.floor(timer.target/60)*10;
+      if(state.timer.elapsed >= state.timer.target){
+        completeSession();
       }
     }
-  },200);
+  }, 250);
 }
 
-start.onclick=()=>{
-  if(!timer.running){
-    timer.running=true;
-    timer.last=Date.now();
+function failHardSession(){
+  state.timer.running = false;
+  state.timer.elapsed = 0;
+  state.timer.lastTick = 0;
+  state.timer.pausedByHidden = false;
+  stopTick();
+
+  state.fails += 1;
+  state.score = Math.max(0, state.score - 20);
+
+  setToast("Hard 모드 실패. -20점");
+  saveState();
+  render();
+}
+
+softBtn.addEventListener("click", () => {
+  if(state.timer.running) return;
+  state.mode = "soft";
+  saveState();
+  render();
+});
+
+hardBtn.addEventListener("click", () => {
+  if(state.timer.running) return;
+  state.mode = "hard";
+  saveState();
+  render();
+});
+
+range.addEventListener("input", () => {
+  const min = Number(range.value);
+  state.timer.target = min * 60;
+
+  if(state.timer.elapsed > state.timer.target){
+    state.timer.elapsed = state.timer.target;
+  }
+
+  saveState();
+  render();
+});
+
+startBtn.addEventListener("click", () => {
+  if(!state.timer.running){
+    state.timer.running = true;
+    state.timer.pausedByHidden = false;
+    state.timer.lastTick = Date.now();
+    setToast("");
+    saveState();
     startTick();
   }else{
-    timer.running=false;
+    state.timer.running = false;
+    stopTick();
+    setToast("일시정지됨");
+    saveState();
   }
   render();
-};
+});
 
-reset.onclick=()=>{
-  timer.running=false;
-  timer.elapsed=0;
+resetBtn.addEventListener("click", () => {
+  state.timer.running = false;
+  state.timer.elapsed = 0;
+  state.timer.lastTick = 0;
+  state.timer.pausedByHidden = false;
+  stopTick();
+  setToast("리셋됨");
+  saveState();
   render();
-};
+});
 
-range.oninput=()=>{
-  timer.target=range.value*60;
-  render();
-};
-
-// ===== VISIBILITY =====
-document.addEventListener("visibilitychange",()=>{
+document.addEventListener("visibilitychange", () => {
   if(document.hidden){
-    if(timer.running){
-      if(mode==="soft"){
-        timer.running=false;
-        timer.hidden=true;
+    if(state.timer.running){
+      if(state.mode === "soft"){
+        state.timer.running = false;
+        state.timer.pausedByHidden = true;
+        stopTick();
+        setToast("앱 이탈로 일시정지됨");
+        saveState();
+        render();
       }else{
-        timer.running=false;
-        timer.elapsed=0;
-        score=Math.max(0,score-20);
-        alert("Hard 실패");
+        failHardSession();
+        alert("Hard 모드 실패: 앱을 벗어나 세션이 리셋되었습니다.");
       }
-      render();
     }
   }else{
-    if(timer.hidden){
-      timer.running=true;
-      timer.last=Date.now();
+    if(state.mode === "soft" && state.timer.pausedByHidden){
+      state.timer.pausedByHidden = false;
+      state.timer.running = true;
+      state.timer.lastTick = Date.now();
+      setToast("자동 재개됨");
+      saveState();
       startTick();
-      timer.hidden=false;
+      render();
     }
   }
 });
 
-render();
+document.querySelectorAll(".themeBtn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    applyTheme(btn.dataset.theme);
+  });
+});
+
+function init(){
+  loadState();
+  applyTheme(localStorage.getItem(K_THEME) || "dark");
+  render();
+
+  if(state.timer.running){
+    startTick();
+  }else{
+    stopTick();
+  }
+}
+
+init();
 </script>
 </body>
 </html>
