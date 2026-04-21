@@ -1,416 +1,256 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Work Training Timer</title>
-  <style>
-    :root{
-      --bg:#0b0d10;
-      --panel:#0f1318;
-      --text:#e9eef5;
-      --muted:#9aa6b2;
-      --line:rgba(255,255,255,.10);
-      --accent:#8bd3ff;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Apple SD Gothic Neo, "Noto Sans KR", Arial, sans-serif;
-      background: radial-gradient(1200px 800px at 30% -10%, rgba(139,211,255,.08), transparent 60%),
-                  radial-gradient(900px 700px at 110% 20%, rgba(255,255,255,.06), transparent 55%),
-                  var(--bg);
-      color:var(--text);
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
-    .app{
-      width:min(440px, 100vw);
-      padding: 14px 14px 18px;
-    }
-    .topbar{
-      padding: 8px 4px 14px;
-    }
-    .title{
-      font-weight:650;
-      letter-spacing:.2px;
-      font-size:18px;
-      margin:0;
-    }
-    .subtitle{
-      font-size:12px;
-      color:var(--muted);
-      margin:6px 0 0;
-      line-height:1.4;
-    }
-    .session{
-      border: 1px solid var(--line);
-      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
-      border-radius: 22px;
-      padding: 14px;
-    }
-    .sessionHeader{
-      display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
-      gap:10px;
-      padding: 2px 2px 10px;
-    }
-    .sessionHeader h2{
-      margin:0;
-      font-size:14px;
-      font-weight:700;
-      letter-spacing:.2px;
-    }
-    .small{
-      color: var(--muted);
-      font-size:12px;
-      line-height:1.25;
-    }
-    .timerFace{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding: 12px;
-      border: 1px solid rgba(255,255,255,.08);
-      background: rgba(0,0,0,.18);
-      border-radius: 16px;
-      margin: 6px 0 10px;
-    }
-    .time{
-      font-variant-numeric: tabular-nums;
-      font-weight:800;
-      font-size: 30px;
-      letter-spacing: .5px;
-    }
-    .pill{
-      font-size:12px;
-      color: var(--muted);
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
-      padding: 8px 10px;
-      border-radius: 999px;
-      white-space:nowrap;
-    }
-    .statusLine{
-      margin: 0 0 12px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      padding: 10px 12px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.02);
-      border-radius: 16px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-    .statusLine strong{ color: var(--text); font-weight:650; }
-    .row{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      padding: 6px 2px;
-    }
-    label{
-      font-size:12px;
-      color:var(--muted);
-      min-width:74px;
-    }
-    input[type="range"]{
-      width:100%;
-      accent-color: var(--accent);
-    }
-    .sessionBtns{
-      display:flex;
-      gap:10px;
-      margin-top: 10px;
-    }
-    .btn{
-      flex:1;
-      border-radius: 16px;
-      border:1px solid var(--line);
-      padding: 12px 12px;
-      cursor:pointer;
-      font-weight:650;
-      letter-spacing:.2px;
-      background: rgba(255,255,255,.04);
-      color: var(--text);
-      transition: transform 80ms ease, background 120ms ease, border-color 120ms ease;
-    }
-    .btn:active{ transform: scale(.99); }
-    .btn.primary{
-      background: rgba(139,211,255,.12);
-      border-color: rgba(139,211,255,.35);
-    }
-    .btn.secondary{
-      background: rgba(255,255,255,.03);
-    }
-    .toast{
-      margin-top:10px;
-      font-size:12px;
-      color: var(--muted);
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Training v1</title>
+
+<style>
+:root{
+  --bg:#0b0d10;
+  --text:#e9eef5;
+  --muted:#9aa6b2;
+  --line:rgba(255,255,255,.1);
+  --accent:#8bd3ff;
+  --danger:#ff6b6b;
+}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+.app{ width:420px; }
+
+.block{
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:12px;
+}
+
+/* mode */
+.modeBtns{
+  display:flex;
+  gap:10px;
+}
+.modeBtn{
+  flex:1;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:#111;
+  color:#fff;
+  cursor:pointer;
+}
+.modeBtn.active{
+  background:#1a2a33;
+  border-color:var(--accent);
+}
+
+/* timer */
+.time{
+  font-size:32px;
+  font-weight:800;
+  text-align:center;
+  margin:10px 0;
+}
+
+.row{ margin:10px 0; }
+
+.btns{
+  display:flex;
+  gap:10px;
+}
+.btn{
+  flex:1;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:#111;
+  color:#fff;
+  cursor:pointer;
+}
+.primary{ background:#1a2a33; }
+
+.status{
+  font-size:12px;
+  color:var(--muted);
+  display:flex;
+  justify-content:space-between;
+}
+</style>
 </head>
+
 <body>
-  <div class="app">
-    <div class="topbar">
-      <p class="title">Work Training Timer</p>
-      <p class="subtitle">작업에 집중하는 훈련용 타이머입니다. 앱을 나가면 일시정지되고, 돌아오면 자동 재개됩니다.</p>
-    </div>
+<div class="app">
 
-    <div class="session">
-      <div class="sessionHeader">
-        <div>
-          <h2>Soft Session</h2>
-          <div class="small">선택 과정 없이 바로 시작할 수 있습니다.</div>
-        </div>
-        <div class="small" id="sessionHint">바로 Start를 누르세요.</div>
-      </div>
+<!-- MODE -->
+<div class="block">
+  <div class="modeBtns">
+    <button class="modeBtn active" id="softBtn">Soft</button>
+    <button class="modeBtn" id="hardBtn">Hard</button>
+  </div>
+</div>
 
-      <div class="statusLine">
-        <span>Status: <strong id="statusText">Ready</strong></span>
-        <span>Today Total: <strong id="todayTotalText">0 min</strong></span>
-      </div>
+<!-- STATUS -->
+<div class="block status">
+  <span>Today: <strong id="today">0 min</strong></span>
+  <span>Score: <strong id="score">0</strong></span>
+</div>
 
-      <div class="timerFace">
-        <div class="time" id="timeText">00:00</div>
-        <div class="pill" id="targetPill">Target: 30 min</div>
-      </div>
+<!-- TIMER -->
+<div class="block">
+  <div class="time" id="time">00:00</div>
 
-      <div class="row">
-        <label for="minutesRange">Minutes</label>
-        <input id="minutesRange" type="range" min="10" max="60" step="5" value="30" />
-      </div>
-
-      <div class="sessionBtns">
-        <button class="btn primary" id="startPauseBtn">Start</button>
-        <button class="btn secondary" id="resetBtn" disabled>Reset</button>
-      </div>
-
-      <div class="toast" id="toast"></div>
-    </div>
+  <div class="row">
+    <input type="range" id="range" min="10" max="60" step="5" value="30"/>
   </div>
 
-  <script>
-    const K_TODAY_TOTAL_SEC = "todayTotalSec";
-    const K_TODAY_DATE = "todayDate";
-    const K_TIMER_STATE = "timerStateV2";
+  <div class="btns">
+    <button class="btn primary" id="start">Start</button>
+    <button class="btn" id="reset">Reset</button>
+  </div>
+</div>
 
-    function nowMs(){ return Date.now(); }
-    function pad2(n){ return String(n).padStart(2, "0"); }
-    function fmtMMSS(totalSec){
-      totalSec = Math.max(0, Math.floor(totalSec));
-      const m = Math.floor(totalSec / 60);
-      const s = totalSec % 60;
-      return `${pad2(m)}:${pad2(s)}`;
-    }
-    function dateKeyLocal(d = new Date()){
-      const y = d.getFullYear();
-      const m = pad2(d.getMonth()+1);
-      const day = pad2(d.getDate());
-      return `${y}-${m}-${day}`;
-    }
-    function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+</div>
 
-    function ensureTodayTotal(){
-      const today = dateKeyLocal();
-      const storedDay = localStorage.getItem(K_TODAY_DATE);
-      if (storedDay !== today){
-        localStorage.setItem(K_TODAY_DATE, today);
-        localStorage.setItem(K_TODAY_TOTAL_SEC, "0");
-      }
-      return Number(localStorage.getItem(K_TODAY_TOTAL_SEC) || "0");
-    }
+<script>
+let mode="soft";
 
-    function addTodayTotal(deltaSec){
-      const cur = ensureTodayTotal();
-      const next = Math.max(0, Math.floor(cur + deltaSec));
-      localStorage.setItem(K_TODAY_TOTAL_SEC, String(next));
-      return next;
-    }
+const softBtn = document.getElementById("softBtn");
+const hardBtn = document.getElementById("hardBtn");
 
-    const minutesRange = document.getElementById("minutesRange");
-    const targetPill = document.getElementById("targetPill");
-    const timeText = document.getElementById("timeText");
-    const startPauseBtn = document.getElementById("startPauseBtn");
-    const resetBtn = document.getElementById("resetBtn");
-    const toast = document.getElementById("toast");
-    const todayTotalText = document.getElementById("todayTotalText");
-    const statusText = document.getElementById("statusText");
+softBtn.onclick=()=>{
+  mode="soft";
+  softBtn.classList.add("active");
+  hardBtn.classList.remove("active");
+};
 
-    let timer = {
-      running: false,
-      targetSec: 30 * 60,
-      elapsedSec: 0,
-      lastTickMs: 0,
-      pausedByHidden: false,
-    };
+hardBtn.onclick=()=>{
+  mode="hard";
+  hardBtn.classList.add("active");
+  softBtn.classList.remove("active");
+};
 
-    let tickId = null;
+const timeEl = document.getElementById("time");
+const startBtn = document.getElementById("start");
+const resetBtn = document.getElementById("reset");
+const range = document.getElementById("range");
+const todayEl = document.getElementById("today");
+const scoreEl = document.getElementById("score");
 
-    function saveTimer(){
-      localStorage.setItem(K_TIMER_STATE, JSON.stringify(timer));
-    }
+let timer={
+  running:false,
+  elapsed:0,
+  target:1800,
+  last:0,
+  hidden:false
+};
 
-    function loadTimer(){
-      const raw = localStorage.getItem(K_TIMER_STATE);
-      if (!raw) return;
-      try{
-        const t = JSON.parse(raw);
-        if (typeof t === "object" && t){
-          timer = {
-            running: !!t.running,
-            targetSec: clamp(Number(t.targetSec || 1800), 600, 3600),
-            elapsedSec: clamp(Number(t.elapsedSec || 0), 0, 3600),
-            lastTickMs: Number(t.lastTickMs || 0),
-            pausedByHidden: !!t.pausedByHidden,
-          };
-        }
-      }catch{}
-    }
+let today=0;
+let score=0;
 
-    function updateTodayTotalUI(){
-      const total = ensureTodayTotal();
-      todayTotalText.textContent = `${Math.floor(total / 60)} min`;
-    }
+function fmt(t){
+  const m=Math.floor(t/60);
+  const s=t%60;
+  return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+}
 
-    function renderTimer(){
-      timeText.textContent = fmtMMSS(timer.elapsedSec);
-      startPauseBtn.textContent = timer.running ? "Pause" : "Start";
-      resetBtn.disabled = (timer.elapsedSec === 0 && !timer.running);
-      statusText.textContent = timer.running ? "Running" : "Ready";
-    }
+function render(){
+  timeEl.textContent=fmt(timer.elapsed);
+  startBtn.textContent=timer.running?"Pause":"Start";
+  todayEl.textContent=Math.floor(today/60)+" min";
+  scoreEl.textContent=score;
+}
 
-    function setToast(msg){
-      toast.textContent = msg || "";
-    }
+let tick;
 
-    function setTargetFromSlider(){
-      const min = Number(minutesRange.value);
-      timer.targetSec = clamp(min * 60, 600, 3600);
-      targetPill.textContent = `Target: ${min} min`;
-      timer.elapsedSec = Math.min(timer.elapsedSec, timer.targetSec);
-      saveTimer();
-      renderTimer();
-    }
+function startTick(){
+  clearInterval(tick);
+  timer.last=Date.now();
 
-    function stopTick(){
-      if (tickId) clearInterval(tickId);
-      tickId = null;
-    }
+  tick=setInterval(()=>{
+    if(!timer.running) return;
 
-    function startTick(){
-      stopTick();
-      timer.lastTickMs = nowMs();
+    const now=Date.now();
+    const d=Math.floor((now-timer.last)/1000);
 
-      tickId = setInterval(() => {
-        if (!timer.running) return;
+    if(d>0){
+      timer.elapsed=Math.min(timer.target,timer.elapsed+d);
+      timer.last=now;
+      render();
 
-        const now = nowMs();
-        const delta = Math.max(0, Math.floor((now - timer.lastTickMs) / 1000));
+      if(timer.elapsed>=timer.target){
+        timer.running=false;
+        clearInterval(tick);
 
-        if (delta > 0){
-          timer.elapsedSec = Math.min(timer.targetSec, timer.elapsedSec + delta);
-          timer.lastTickMs = now;
-          saveTimer();
-          renderTimer();
+        today+=timer.target;
 
-          if (timer.elapsedSec >= timer.targetSec){
-            timer.running = false;
-            stopTick();
-            saveTimer();
-            renderTimer();
+        // 점수 계산
+        score+=Math.floor(timer.target/60)*10;
 
-            const newTotal = addTodayTotal(timer.targetSec);
-            todayTotalText.textContent = `${Math.floor(newTotal / 60)} min`;
-            statusText.textContent = "Completed";
-            setToast("세션 완료. 오늘 누적에 반영됐습니다.");
-          }
-        }
-      }, 250);
-    }
-
-    startPauseBtn.addEventListener("click", () => {
-      if (!timer.running){
-        timer.running = true;
-        timer.pausedByHidden = false;
-        timer.lastTickMs = nowMs();
-        saveTimer();
-        startTick();
-        renderTimer();
-        setToast("");
-      } else {
-        timer.running = false;
-        stopTick();
-        saveTimer();
-        renderTimer();
-        setToast("Paused.");
-      }
-    });
-
-    resetBtn.addEventListener("click", () => {
-      timer.running = false;
-      stopTick();
-      timer.elapsedSec = 0;
-      timer.pausedByHidden = false;
-      timer.lastTickMs = 0;
-      saveTimer();
-      renderTimer();
-      statusText.textContent = "Ready";
-      setToast("");
-    });
-
-    minutesRange.addEventListener("input", setTargetFromSlider);
-
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden){
-        if (timer.running){
-          timer.running = false;
-          timer.pausedByHidden = true;
-          stopTick();
-          saveTimer();
-          renderTimer();
-          statusText.textContent = "Paused";
-          setToast("앱을 나가서 일시정지됐어요.");
-        }
-      } else {
-        if (timer.pausedByHidden){
-          timer.pausedByHidden = false;
-          timer.running = true;
-          timer.lastTickMs = nowMs();
-          saveTimer();
-          startTick();
-          renderTimer();
-          setToast("");
-        }
-      }
-    });
-
-    function init(){
-      loadTimer();
-
-      const mins = clamp(Math.round(timer.targetSec / 60), 10, 60);
-      minutesRange.value = String(mins);
-      targetPill.textContent = `Target: ${mins} min`;
-
-      updateTodayTotalUI();
-      renderTimer();
-
-      if (timer.running){
-        startTick();
-      } else {
-        timer.running = false;
-        stopTick();
-        saveTimer();
+        render();
       }
     }
+  },200);
+}
 
-    init();
-  </script>
+startBtn.onclick=()=>{
+  if(!timer.running){
+    timer.running=true;
+    timer.last=Date.now();
+    startTick();
+  }else{
+    timer.running=false;
+  }
+  render();
+};
+
+resetBtn.onclick=()=>{
+  timer.running=false;
+  timer.elapsed=0;
+  render();
+};
+
+range.oninput=()=>{
+  timer.target=range.value*60;
+};
+
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden){
+    if(timer.running){
+      if(mode==="soft"){
+        timer.running=false;
+        timer.hidden=true;
+      }else{
+        // HARD FAIL
+        timer.running=false;
+        timer.elapsed=0;
+
+        // 패널티
+        score=Math.max(0,score-20);
+
+        alert("Hard 모드 실패");
+      }
+      render();
+    }
+  }else{
+    if(mode==="soft" && timer.hidden){
+      timer.running=true;
+      timer.last=Date.now();
+      startTick();
+      timer.hidden=false;
+    }
+  }
+});
+
+render();
+</script>
+
 </body>
 </html>
